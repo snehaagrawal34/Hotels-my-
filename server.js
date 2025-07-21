@@ -89,11 +89,12 @@ const cors=require('cors');
 const express=require('express');
 const app=express();
 const db=require('./db');
+require('dotenv').config();
 // const Person=require('./models/person');
 // const Menu=require('./models/menu');
 const personRoutes=require('./routes/personRoutes');
 const menuItemRoutes=require('./routes/menuItemRoutes');
-
+const PORT=process.env.PORT||3000;
 
 app.use(cors());
 app.use(express.json());
@@ -206,7 +207,7 @@ app.get('/manager',async(req,res)=>{
             res.status(401).json({error:"Internal server error"});
         }
     });*/
-app.listen(4000,function(){
+app.listen(PORT,function(){
     console.log("Server is listening on port 4000");
 });
 
