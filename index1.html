@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Restaurant API Frontend</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 30px;
+      background-color: #f4f4f4;
+    }
+    h1 {
+      color: #333;
+    }
+    button {
+      padding: 10px 15px;
+      margin: 5px;
+      border: none;
+      background-color: #4CAF50;
+      color: white;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+    input, select {
+      padding: 8px;
+      margin: 5px 0;
+      width: 100%;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    .container {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+    pre {
+      background: #222;
+      color: #0f0;
+      padding: 15px;
+      border-radius: 8px;
+      overflow-x: auto;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>🍽️ Restaurant App Frontend</h1>
+
+  <div class="container">
+    <h2>📦 Static Items</h2>
+    <button onclick="getData('/')">Greet</button>
+    <button onclick="getData('/cake')">Get Cake</button>
+    <button onclick="getData('/pasta')">Get Pasta</button>
+    <button onclick="getData('/paneer')">Get Paneer Variety</button>
+  </div>
+
+  <div class="container">
+    <h2>🧾 Place an Order</h2>
+    <input type="text" id="orderItem" placeholder="Item (e.g., Paneer)">
+    <input type="text" id="orderSpice" placeholder="Spice Level (e.g., Medium)">
+    <button onclick="placeOrder()">Order Now</button>
+  </div>
+
+  <div class="container">
+    <h2>👤 Add Person</h2>
+    <input id="name" placeholder="Name">
+    <input id="age" type="number" placeholder="Age">
+      <label for="work">Work Role</label>
+  <select id="work">
+    <option value="chef">chef</option>
+    <option value="manager">manager</option>
+    <option value="waiter">waiter</option>
+  </select>
+    <input id="mobile" placeholder="Mobile">
+    <input id="email" type="email" placeholder="Email">
+    <input id="address" placeholder="Address">
+    <input id="salary" placeholder="Salary">
+    <button onclick="addPerson()">Add Person</button>
+  </div>
+
+  <div class="container">
+    <h2>📄 All Persons</h2>
+    <button onclick="getPersons()">Load Persons</button>
+  </div>
+
+  <h3>📋 Output</h3>
+  <pre id="output">Click any button above...</pre>
+
+  <script>
+    const baseURL = "http://localhost:4000";
+
+    function getData(endpoint) {
+      fetch(baseURL + endpoint)
+        .then(res => res.json().catch(() => res.text()))
+        .then(data => {
+          document.getElementById("output").textContent = JSON.stringify(data, null, 2);
+        })
+        .catch(err => {
+          document.getElementById("output").textContent = "Error: " + err;
+        });
+    }
+
+    function placeOrder() {
+      const item = document.getElementById("orderItem").value;
+      const spice = document.getElementById("orderSpice").value;
+      fetch(baseURL + "/order", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ item, spice })
+      })
+      .then(res => res.text())
+      .then(msg => document.getElementById("output").textContent = msg)
+      .catch(err => document.getElementById("output").textContent = "Error: " + err);
+    }
+
+    function addPerson() {
+      const person = {
+        name: document.getElementById("name").value,
+        age: document.getElementById("age").value,
+        work:document.getElementById("work").value,
+        mobile: document.getElementById("mobile").value,
+        email: document.getElementById("email").value,
+        address: document.getElementById("address").value,
+        
+        salary:document.getElementById("salary").value
+      };
+
+      fetch(baseURL + "/person", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(person)
+      })
+      .then(res => res.json())
+      .then(data => {
+        document.getElementById("output").textContent = "Saved: \n" + JSON.stringify(data, null, 2);
+      })
+      .catch(err => document.getElementById("output").textContent = "Error: " + err);
+    }
+
+    function getPersons() {
+      fetch(baseURL + "/person")
+        .then(res => res.json())
+        .then(data => {
+          document.getElementById("output").textContent = "Persons:\n" + JSON.stringify(data, null, 2);
+        })
+        .catch(err => {
+          document.getElementById("output").textContent = "Error: " + err;
+        });
+    }
+  </script>
+
+</body>
+</html>

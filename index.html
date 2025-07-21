@@ -1,0 +1,73 @@
+<!-- <!DOCTYPE html>
+<html>
+<head>
+  <title>Express API Buttons</title>
+</head>
+<body>
+  <h2>Hit Server APIs</h2>
+
+  <button onclick="getHello()">GET /</button>
+  <button onclick="getCake()">GET /cake</button>
+  <button onclick="getPaneer()">GET /paneer</button>
+  <button onclick="postItem()">POST /items</button>
+  <button onclick="getPasta()">Pasta</button>
+  <button>Roti</button>
+  <button>Pizza</button>
+
+  <pre id="result"></pre>
+   <h2>🧾 Place Order</h2>
+
+  <button onclick="placeOrder()">Order Pav Bhaji</button>
+   <pre id="result" style="background: #f0f0f0; padding: 10px;"></pre>
+
+  <script>
+    function getPasta(){
+        fetch('http://localhost:4000/pasta')
+        .then(res=>res.text())
+        .then(data=>document.getElementById("result").textContent=data);
+    }
+    function placeOrder(){
+        fetch(
+            "http://localhost:4000/order",{
+            method:"POST",
+            headers:{
+                "Content-Type":"application/json"
+            },
+            body:JSON.stringify({
+                item:"Pav-Bhaji",
+                spice:"Extra"
+            })
+        })
+        .then(res=>res.text())
+        .then(data=>{
+            document.getElementById("result").textContent="✅ Server: " + data;
+        })
+    }
+    function getHello() {
+      fetch('http://localhost:4000/')
+        .then(res => res.text())
+        .then(data => document.getElementById('result').textContent = data);
+    }
+
+    function getCake() {
+      fetch('http://localhost:4000/cake')
+        .then(res => res.text())
+        .then(data => document.getElementById('result').textContent = data);
+    }
+
+    function getPaneer() {
+      fetch('http://localhost:4000/paneer')
+        .then(res => res.json())
+        .then(data => document.getElementById('result').textContent = JSON.stringify(data, null, 2));
+    }
+
+    function postItem() {
+      fetch('http://localhost:4000/items', {
+        method: 'POST'
+      })
+        .then(res => res.text())
+        .then(data => document.getElementById('result').textContent = data);
+    }
+  </script>
+</body>
+</html> -->
