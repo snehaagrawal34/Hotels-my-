@@ -125,9 +125,7 @@ app.get('/paneer',function(req,res){
    }
    res.send(varieties);
 });
-app.post('/items',(req,res)=>{
-    res.send("Sending the data");
-})
+
 app.post('/order',(req,res)=>{
    const { item, spice } = req.body;
      console.log("Order received:", item, spice);
