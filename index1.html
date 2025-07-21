@@ -107,7 +107,7 @@
     function placeOrder() {
       const item = document.getElementById("orderItem").value;
       const spice = document.getElementById("orderSpice").value;
-      fetch(baseURL + "/order", {
+      fetch(baseURL + "/menu", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ item, spice })
