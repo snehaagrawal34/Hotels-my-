@@ -2,6 +2,7 @@ const express=require('express');
 const router=express.Router();
 const Menu=require('../models/menu');
 
+
 router.get('/',async(req,res)=>{
     try{
         const response=await Menu.find();
@@ -41,6 +42,32 @@ router.post('/',async(req,res)=>{
      console.log(err);
         res.status(501).json({error:"Internal server error"});
 }
+})
+router.put('/:id',async(req,res)=>{
+    try{
+    const id=req.params.id;
+    const data=req.body;
+    const response=await Menu.findByIdAndUpdate(id,data,{
+        new:true,
+        runValidators:true
+    });
+    console.log("data updated");
+    res.status(200).json({response});
+    }catch(err){
+        console.log(err);
+        res.status(501).json({error:"Internal server error"});
+    }
+})
+router.delete('/:id',async(req,res)=>{
+    try{
+        const id=req.params.id;
+        const response=await Menu.findByIdAndDelete(id);
+        console.log("data deleted");
+        res.status(200).json({response});
+    }catch(err){
+        console.log(err);
+        res.status(501).json({error:"Internal server error"});
+    }
 })
 //comment added for testing purposes
 module.exports=router;

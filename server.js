@@ -88,21 +88,58 @@ console.log(typeof(convert_object_into_JSONstring));
 const cors=require('cors');
 const express=require('express');
 const app=express();
-const db=require('./db');
+require('./db');
 require('dotenv').config();
-// const Person=require('./models/person');
+const Person=require('./models/person');
 // const Menu=require('./models/menu');
 const personRoutes=require('./routes/personRoutes');
 const menuItemRoutes=require('./routes/menuItemRoutes');
+// const passport=require('passport');
+// const LocalStrategy=require('passport-local').Strategy; //username-password strategy
 const PORT=process.env.PORT||3000;
+
+//Middleware function
+const logRequest=(req,res,next)=>{
+    const time=new Date().toLocaleString();
+    const url=req.originalUrl;
+    console.log(`At ${time} Request is made to : ${url}`);
+    next(); //this is our middleware, if there is any other middleware go there , if not go to provide response
+//to go in next phase
+}
 
 app.use(cors());
 app.use(express.json());
-app.use('/person',personRoutes);
-app.use('/menu',menuItemRoutes);
 
-app.get('/',function(req,res){
-    res.send("Hello Sneha");
+const passport=require('./auth');
+// passport.use(new LocalStrategy(async(USERNAME,password,done)=>{
+//     try{
+//         console.log('Received Credentials :' ,USERNAME,password);
+          
+//             const user=await Person.findOne({username:USERNAME});
+//             //done callback function (error,user,info)
+            
+//             if(!user){
+//                 return done(null,false,{message:"Incorrect Username"});
+//             }
+//             const isPasswordMatch =  user.password===password?true:false;
+//             if(isPasswordMatch){
+//                 return done(null,user);
+//             }
+//             else{
+//                 return done(null,false,{message:"Incorrect password"});
+//             }
+//     }catch(err){
+//         return done(err);
+//     }
+// }))
+app.use(passport.initialize());
+
+
+app.post('/',function(req,res){
+   try {res.send("Hello Sneha");}
+   catch(err){
+    console.log(err);
+   }
 })
 
 //can use bodyParser also to parse data from body of http request
@@ -110,7 +147,9 @@ app.get('/',function(req,res){
 //const bodyParser=require('body-parser');
 //app.use(bodyParser.json());   //stores in req.body
 
-
+app.use(logRequest);
+app.use('/person',personRoutes);
+app.use('/menu',menuItemRoutes);
 app.get('/cake',function(req,res){
     res.send("Cake is ready");
 })
@@ -207,7 +246,7 @@ app.get('/manager',async(req,res)=>{
             res.status(401).json({error:"Internal server error"});
         }
     });*/
-app.listen(PORT,function(){
+app.listen(4000,function(){
     console.log("Server is listening on port 4000");
 });
 

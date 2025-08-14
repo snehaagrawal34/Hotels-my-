@@ -1,25 +1,63 @@
 const express=require('express');
 const Person = require('./../models/person');
-const { findByIdAndUpdate } = require('../models/menu');
+const passport = require('../auth');
+const {jwtAuthMiddleware,generateToken} = require('../jwt');
+
+
 const router=express.Router();
 
 const app=express();
 app.use(express.json())
 
-router.post('/',async(req,res)=>{
+router.post('/signup',async(req,res)=>{
     try{
     const data=req.body;
     const newPerson= new Person(data);
     const response=await newPerson.save();
     console.log("data saved");
-    res.status(200).json(response);
+    const payload={
+        id:response._id,
+        username:response.username,
+    }
+    const token=generateToken(payload);
+    console.log("token generated is : ", token);
+    res.status(200).json({response:response,token:token,payload:payload});
     }
     catch(err){
         console.log(err);
         res.status(501).json({error:"Internal server error"});
     }
     })
-router.get('/',async(req,res)=>{
+
+//     router.post('/login',passport.authenticate('local',{session:false}),
+// (req,res)=>{
+//     res.status(200).json({ message: 'Login successful',
+//       user: req.user});
+// })
+router.post('/login',passport.authenticate('local',{session:false}),async(req,res)=>{
+    try{
+        //extract username and password from request body
+        const {username,password}=req.body;
+        //Find user by username
+        const user=await Person.findOne({username:username});
+        if(!user||user.comparePassword(password)===false){
+            return res.status(401).json({error:"Invalid username or password"});
+        }
+        //Generate JWT token
+        const payload={
+            id:user._id,
+            username:user.username, 
+        }
+        const token=generateToken(payload);
+        console.log("token generated is : ", token); 
+        res.status(200).json({token:token});
+    }
+    catch(err){
+        console.log(err);
+        return res.status(500).json({error:"Internal server error"});
+    }   
+})
+router.get('/',jwtAuthMiddleware,async(req,res)=>{
     try{
         const response=await Person.find();
         console.log("data fetched");
@@ -30,7 +68,21 @@ router.get('/',async(req,res)=>{
         res.status(501).json({error:"Internal server error"});
     }
 })
-router.get('/:workType',async(req,res)=>{
+router.get('/profile',jwtAuthMiddleware,async(req,res)=>{
+    try{
+        const userData=req.user;
+        console.log("User Data: ",userData);
+        const userId=userData.id;
+        const user=await Person.findById(userId);
+        console.log(user);
+        res.status(200).json(user);
+    }catch(err){
+        console.log(err);
+        res.status(501).json({error:"Internal server error"});
+   
+    }
+})
+router.get('/:workType',jwtAuthMiddleware,async(req,res)=>{
     try{
         const workType=req.params.workType;
         if(workType=='chef'||workType=='manager'||workType=='waiter'){
